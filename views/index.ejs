@@ -1,0 +1,92 @@
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت فایل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow p-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold"><%- h1 %></h1>
+      <a
+        href="/upload"
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      >
+        آپلود فایل
+      </a>
+    </header>
+
+    <!-- Content -->
+    <main class="p-6">
+      <%- typeof content !== 'undefined' ? content : '' %>
+
+      <!-- File list -->
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4">
+        <% let safeItems = typeof items !== 'undefined' ? items : []; %> <%
+        if(safeItems && safeItems.length > 0){ %> <% safeItems.forEach(item => {
+        const ext = item.split('.').pop(); const image =
+        ['png','jpg','jpeg','gif','webp','bmp','svg']; let icon = '📄';
+        if(!item.includes('.')) icon = '📁'; else if(image.includes(ext)) icon =
+        '🖼️'; %>
+        <div
+          class="bg-white shadow rounded-lg p-3 flex flex-col items-center hover:shadow-md cursor-pointer"
+          ondblclick="openFileFolder('<%= item %>')"
+        >
+          <div class="text-5xl"><%= icon %></div>
+          <p class="mt-2 text-sm font-medium break-words text-center">
+            <%= item %>
+          </p>
+        </div>
+        <% }); %> <% } else { %>
+        <p class="text-gray-500">هیچ فایلی وجود ندارد.</p>
+        <% } %>
+      </div>
+      <!-- بخش آپلود -->
+      <section class="p-6">
+        <form
+          action="/upload"
+          method="POST"
+          enctype="multipart/form-data"
+          class="bg-white p-4 rounded-lg shadow flex gap-4 items-center"
+        >
+          <input
+            type="file"
+            name="files"
+            multiple
+            class="border p-2 rounded w-full"
+          />
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            آپلود
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      function openFileFolder(fileName) {
+        const image = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg"];
+        const txt = ["txt"];
+        const ext = fileName.split(".").pop();
+
+        if (fileName.indexOf(".") === -1) {
+          window.location.href += "/" + fileName;
+        } else {
+          if (image.includes(ext)) {
+            const url = window.location.href.split("files/");
+            window.location.href = `/images/${url[1] || ""}/${fileName}`;
+          } else if (txt.includes(ext)) {
+            const url = window.location.href.split("files/");
+            window.location.href = `/text-editor/${url[1] || ""}/${fileName}`;
+          } else {
+            const url = window.location.href.split("files/");
+            window.location.href = `/download/${url[1] || ""}/${fileName}`;
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
